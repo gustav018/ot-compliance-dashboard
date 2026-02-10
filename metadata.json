@@ -1,0 +1,5 @@
+{
+  "name": "OT Compliance Dashboard",
+  "description": "A dashboard to analyze Work Order (OT) delivery compliance from Excel data, filtering specific customers and calculating workshop performance.",
+  "requestFramePermissions": []
+}
