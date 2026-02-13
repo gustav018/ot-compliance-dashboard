@@ -7,7 +7,8 @@ export interface ColumnMapping {
   folio: string;
   clientCode: string;
   workshop: string;
-  promisedDate: string; // Fecha Estimada
+  promisedDate: string; // Fecha Estimada Original
+  secondPromisedDate?: string; // Segunda Fecha Estimada (Opcional)
   realDeliveryDate: string; // Fecha Entrega Real
   billingDate?: string; // Fecha de facturacion (optional)
   amount: string; // Columna de Importe/Total
@@ -22,6 +23,7 @@ export interface ParsedOT {
   folio: string;
   workshop: string;
   estimatedDate: Date | null;
+  secondEstimatedDate: Date | null; // Nueva lógica: Fecha reprogramada
   realDate: Date | null;
   billingDate: Date | null;
   status: string;

@@ -116,6 +116,9 @@ export const processSheet = (workbook: XLSX.WorkBook, sheetName: string, mapping
     
     const isInternal = INTERNAL_CLIENT_CODES.includes(clientCode);
     const estimatedDate = parseExcelDate(row[mapping.promisedDate]);
+    // Parse second date if mapped
+    const secondEstimatedDate = mapping.secondPromisedDate ? parseExcelDate(row[mapping.secondPromisedDate]) : null;
+    
     const realDate = parseExcelDate(row[mapping.realDeliveryDate]);
     const billingDate = mapping.billingDate ? parseExcelDate(row[mapping.billingDate]) : null;
 
@@ -130,6 +133,7 @@ export const processSheet = (workbook: XLSX.WorkBook, sheetName: string, mapping
       folio,
       workshop: workshopName || 'Sin Taller',
       estimatedDate,
+      secondEstimatedDate,
       realDate,
       billingDate,
       status: 'Procesado',
@@ -141,7 +145,6 @@ export const processSheet = (workbook: XLSX.WorkBook, sheetName: string, mapping
     };
 
     // 1. Add to All Rows (For Financials - assumes one row per invoice/line item)
-    // We do NOT filter duplicates here based on OT, because one OT can have multiple invoices.
     allRows.push(parsedRow);
 
     // 2. Logic for Compliance (Unique OTs)
@@ -150,16 +153,11 @@ export const processSheet = (workbook: XLSX.WorkBook, sheetName: string, mapping
         const existingOT = otMapForCompliance.get(otNumber)!;
 
         // Priority Logic for Compliance Data:
-        // 1. If existing is Internal and New is External -> Replace (External wins)
-        // 2. If both External (or both Internal), keep the one with data (e.g., if one has RealDate and other doesn't)
-        // 3. Fallback: Keep existing
-        
         if (existingOT.isInternalClient && !parsedRow.isInternalClient) {
             removedOtIds.push(`${existingOT.id} (Reemplazado interno por externo)`);
             otMapForCompliance.set(otNumber, parsedRow);
         } else if (!existingOT.isInternalClient && parsedRow.isInternalClient) {
              removedOtIds.push(`${parsedRow.id} (Duplicado interno ignorado)`);
-             // Keep existing
         } else {
             // Tie-breaker: If new row has a Real Date and existing doesn't, take new.
             if (!existingOT.realDate && parsedRow.realDate) {
@@ -176,7 +174,6 @@ export const processSheet = (workbook: XLSX.WorkBook, sheetName: string, mapping
 
   const uniqueOTs = Array.from(otMapForCompliance.values());
 
-  // Report logic based on ALL ROWS read vs unique
   const internalClientsByCode: Record<string, number> = {};
   let internalClientsCount = 0;
   
@@ -222,23 +219,28 @@ export const calculateStats = (ots: ParsedOT[]): GlobalStats => {
     stats.amount += ot.amount;
     globalTotal++;
 
-    if (ot.realDate && ot.estimatedDate) {
-      const est = new Date(ot.estimatedDate);
+    // LOGIC UPDATE: Use secondEstimatedDate if available, otherwise estimatedDate
+    const targetDate = ot.secondEstimatedDate || ot.estimatedDate;
+
+    if (ot.realDate && targetDate) {
+      const target = new Date(targetDate);
       const real = new Date(ot.realDate);
-      est.setHours(0, 0, 0, 0);
+      target.setHours(0, 0, 0, 0);
       real.setHours(0, 0, 0, 0);
 
-      if (real <= est) {
+      if (real <= target) {
         stats.onTime++;
         globalOnTime++;
       } else {
         stats.late++;
         globalLate++;
       }
-    } else if (ot.estimatedDate && !ot.realDate) {
+    } else if (targetDate && !ot.realDate) {
+      // Has target date but no real date -> Pending (or potentially late if today > target, but classified as Pending delivery)
       stats.pending++;
       globalPending++;
     } else {
+      // No target date at all
       stats.pending++;
       globalPending++;
     }

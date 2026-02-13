@@ -15,6 +15,7 @@ const ColumnMapper: React.FC<ColumnMapperProps> = ({ headers, onConfirm, onCance
     clientCode: '',
     workshop: '',
     promisedDate: '',
+    secondPromisedDate: '',
     realDeliveryDate: '',
     billingDate: '',
     amount: '',
@@ -31,9 +32,12 @@ const ColumnMapper: React.FC<ColumnMapperProps> = ({ headers, onConfirm, onCance
       else if (lower.includes('folio') || lower.includes('nrofolio')) newMapping.folio = h;
       else if (lower.includes('código de cliente') || lower.includes('cliente/proveedor')) newMapping.clientCode = h;
       else if (lower.includes('taller') || lower.includes('nombre_taller')) newMapping.workshop = h;
+      // Date detection
+      else if (lower.includes('2da') || lower.includes('segunda') || lower.includes('reprogramada') || lower.includes('nueva fecha')) newMapping.secondPromisedDate = h;
       else if (lower.includes('fecha estimada') || lower.includes('prometida')) newMapping.promisedDate = h;
       else if (lower.includes('entrega real')) newMapping.realDeliveryDate = h;
       else if (lower.includes('contabilización') || lower.includes('factura') || lower.includes('facturación')) newMapping.billingDate = h;
+      
       else if (lower.includes('total gs') || lower.includes('total usd') || lower.includes('importe')) newMapping.amount = h;
       else if (lower.includes('tipoot') || lower.includes('tipo ot') || lower.includes('tipo de ot')) newMapping.otType = h;
     });
@@ -168,6 +172,19 @@ const ColumnMapper: React.FC<ColumnMapperProps> = ({ headers, onConfirm, onCance
                 onChange={(e) => setMapping({...mapping, promisedDate: e.target.value})}
               >
                 <option value="">Seleccionar columna...</option>
+                {headers.map(h => <option key={h} value={h}>{h}</option>)}
+              </select>
+            </div>
+
+            <div className="bg-slate-50 p-2 rounded-lg border border-slate-200">
+              <label className="block text-sm font-medium text-blue-700 mb-1">2da Fecha Estimada (Opcional)</label>
+              <p className="text-xs text-slate-500 mb-1">Si existe, se usa esta para calcular el atraso.</p>
+              <select 
+                className="w-full border-blue-200 rounded-md shadow-sm text-sm focus:border-blue-500 focus:ring-blue-500 bg-blue-50"
+                value={mapping.secondPromisedDate}
+                onChange={(e) => setMapping({...mapping, secondPromisedDate: e.target.value})}
+              >
+                <option value="">Sin segunda fecha...</option>
                 {headers.map(h => <option key={h} value={h}>{h}</option>)}
               </select>
             </div>

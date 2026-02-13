@@ -6,7 +6,7 @@ import {
 } from 'recharts';
 import { ParsedOT, WorkshopStats, ColumnMapping, ProcessingReport } from '../types';
 import { calculateStats } from '../utils/excelHelpers';
-import { CheckCircle, AlertTriangle, Clock, Activity, Filter, Calendar, Wrench, ListFilter, Users, ShieldAlert, DollarSign, AlertCircle, Box, CreditCard, LayoutList, Download } from 'lucide-react';
+import { CheckCircle, AlertTriangle, Clock, Activity, Filter, Calendar, Wrench, ListFilter, Users, ShieldAlert, DollarSign, AlertCircle, Box, CreditCard, LayoutList, Download, ArrowRight } from 'lucide-react';
 import AuditModal from './AuditModal';
 
 interface DashboardProps {
@@ -178,12 +178,17 @@ const Dashboard: React.FC<DashboardProps> = ({ uniqueOTs, allRows, onReset, file
         'Folio': ot.folio || '',
         'Factura': ot.invoiceId || '',
         'Fecha Estimada': ot.estimatedDate ? ot.estimatedDate.toLocaleDateString('es-PY') : '',
+        '2da Fecha Estimada': ot.secondEstimatedDate ? ot.secondEstimatedDate.toLocaleDateString('es-PY') : '',
         'Fecha Real': ot.realDate ? ot.realDate.toLocaleDateString('es-PY') : '',
         'Fecha Facturación': ot.billingDate ? ot.billingDate.toLocaleDateString('es-PY') : '',
         'Importe': ot.amount,
-        'Estado': (!ot.realDate && !ot.estimatedDate) ? 'Sin Fecha' :
-                  (ot.realDate && ot.estimatedDate && ot.realDate <= ot.estimatedDate) ? 'A Tiempo' :
-                  (!ot.realDate) ? 'Pendiente' : 'Retraso',
+        'Estado': (() => {
+            const targetDate = ot.secondEstimatedDate || ot.estimatedDate;
+            if (!ot.realDate && !targetDate) return 'Sin Fecha';
+            if (ot.realDate && targetDate && ot.realDate <= targetDate) return 'A Tiempo';
+            if (!ot.realDate) return 'Pendiente';
+            return 'Retraso';
+        })(),
          ...ot.customValues
     }));
 
@@ -191,6 +196,14 @@ const Dashboard: React.FC<DashboardProps> = ({ uniqueOTs, allRows, onReset, file
     const ws = XLSX.utils.json_to_sheet(formattedData);
     XLSX.utils.book_append_sheet(wb, ws, sheetTitle);
     XLSX.writeFile(wb, `${fileName?.replace(/\.[^/.]+$/, "") || 'Reporte'}_${sheetTitle}.xlsx`);
+  };
+
+  const renderStatusBadge = (ot: ParsedOT) => {
+      const targetDate = ot.secondEstimatedDate || ot.estimatedDate;
+      if (!ot.realDate && !targetDate) return <span className="text-yellow-600">⚠ Sin Fecha</span>;
+      if (ot.realDate && targetDate && ot.realDate <= targetDate) return <span className="text-green-600 font-bold">OK</span>;
+      if (!ot.realDate) return <span className="text-yellow-600">Pendiente</span>;
+      return <span className="text-red-600 font-bold">Retraso</span>;
   };
 
   return (
@@ -329,7 +342,8 @@ const Dashboard: React.FC<DashboardProps> = ({ uniqueOTs, allRows, onReset, file
                 <Box className="text-blue-600 mt-1" size={20} />
                 <div className="text-sm text-blue-800">
                     <strong>Datos Filtrados para Logística:</strong> Se han eliminado duplicados de OT (1 registro por OT) y excluido clientes internos (C0008157, C0001114, C0001140).
-                    Datos basados en <strong>{complianceData.length}</strong> OTs únicas.
+                    <br/>
+                    <span className="text-xs text-blue-600 mt-1 inline-block">Nota: Si existe una "2da Fecha Estimada", se utiliza esa para el cálculo de atraso.</span>
                 </div>
              </div>
 
@@ -412,9 +426,9 @@ const Dashboard: React.FC<DashboardProps> = ({ uniqueOTs, allRows, onReset, file
                             <tr>
                                 <th className="px-4 py-2">Nro OT</th>
                                 <th className="px-4 py-2">Taller</th>
-                                <th className="px-4 py-2">Cliente</th>
-                                <th className="px-4 py-2 text-right">Prometida</th>
-                                <th className="px-4 py-2 text-right">Real</th>
+                                <th className="px-4 py-2 text-right text-xs uppercase text-slate-500">Prometida Original</th>
+                                <th className="px-4 py-2 text-right text-xs uppercase text-blue-600">2da Fecha</th>
+                                <th className="px-4 py-2 text-right text-xs uppercase text-slate-500">Real</th>
                                 <th className="px-4 py-2 text-center">Estado</th>
                             </tr>
                         </thead>
@@ -423,15 +437,15 @@ const Dashboard: React.FC<DashboardProps> = ({ uniqueOTs, allRows, onReset, file
                                 <tr key={idx} className="hover:bg-slate-50">
                                     <td className="px-4 py-2 font-medium">{row.id}</td>
                                     <td className="px-4 py-2">{row.workshop}</td>
-                                    <td className="px-4 py-2 text-xs text-slate-500">{row.clientCode}</td>
-                                    <td className="px-4 py-2 text-right">{row.estimatedDate?.toLocaleDateString()}</td>
+                                    <td className="px-4 py-2 text-right text-slate-500">{row.estimatedDate?.toLocaleDateString() || '-'}</td>
+                                    <td className="px-4 py-2 text-right font-medium text-blue-600">
+                                        {row.secondEstimatedDate ? (
+                                            <span className="bg-blue-50 px-2 py-1 rounded">{row.secondEstimatedDate.toLocaleDateString()}</span>
+                                        ) : '-'}
+                                    </td>
                                     <td className="px-4 py-2 text-right">{row.realDate?.toLocaleDateString() || '-'}</td>
                                     <td className="px-4 py-2 text-center">
-                                        {(!row.realDate && !row.estimatedDate) ? <span className="text-yellow-600">⚠ Sin Fecha</span> :
-                                         (row.realDate && row.estimatedDate && row.realDate <= row.estimatedDate) ? <span className="text-green-600 font-bold">OK</span> :
-                                         (!row.realDate) ? <span className="text-yellow-600">Pendiente</span> :
-                                         <span className="text-red-600 font-bold">Retraso</span>
-                                        }
+                                        {renderStatusBadge(row)}
                                     </td>
                                 </tr>
                             ))}
