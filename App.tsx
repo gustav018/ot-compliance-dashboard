@@ -98,7 +98,7 @@ const App: React.FC = () => {
                 <LayoutDashboard size={24} />
               </div>
               <h1 className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-700 to-blue-500">
-                OT Analytics
+                Análisis de OT
               </h1>
             </div>
             <div className="flex items-center gap-4">
@@ -137,7 +137,7 @@ const App: React.FC = () => {
             <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6 text-center text-sm text-slate-500 max-w-4xl">
               <div className="p-4 bg-white rounded-lg shadow-sm border border-slate-100">
                 <span className="block font-semibold text-slate-700 mb-1">Doble Enfoque</span>
-                Indicadores separados para Logística (OTs únicas) y Finanzas (Total facturado).
+                Indicadores de cumplimiento y retrabajos por separado.
               </div>
               <div className="p-4 bg-white rounded-lg shadow-sm border border-slate-100">
                 <span className="block font-semibold text-slate-700 mb-1">Gestión de Reclamos</span>
@@ -209,7 +209,7 @@ const App: React.FC = () => {
       <footer className="bg-white border-t border-slate-200 py-6 mt-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center">
           <p className="text-sm text-slate-500">
-            &copy; {new Date().getFullYear()} Dashboard de Operaciones. Procesamiento local seguro. Los datos no son alacenados.
+            &copy; {new Date().getFullYear()}Procesamiento local. Los datos no son almacenados.
           </p>
           <div className="flex items-center gap-4 mt-4 md:mt-0">
             <a href="#" className="text-slate-400 hover:text-slate-600 transition-colors">
