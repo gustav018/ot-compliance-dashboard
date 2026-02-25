@@ -133,7 +133,7 @@ const ColumnMapper: React.FC<ColumnMapperProps> = ({ headers, onConfirm, onCance
             </h3>
 
              <div>
-              <label className="block text-sm font-medium text-slate-600 mb-1">Total / Importe (GS/USD)</label>
+              <label className="block text-sm font-medium text-slate-600 mb-1">Total / Importe (usar colum. GS)</label>
               <select 
                 className="w-full border-slate-300 rounded-md shadow-sm text-sm focus:border-blue-500 focus:ring-blue-500"
                 value={mapping.amount}
