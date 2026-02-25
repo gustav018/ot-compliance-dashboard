@@ -218,7 +218,7 @@ const ColumnMapper: React.FC<ColumnMapperProps> = ({ headers, onConfirm, onCance
         {/* Dynamic Filters Section */}
         <div className="p-6 border-t border-slate-100 bg-slate-50">
             <h3 className="font-semibold text-slate-700 mb-3">Filtros Adicionales</h3>
-            <p className="text-xs text-slate-500 mb-4">Selecciona columnas adicionales para agregar como filtros en el tablero (Ej: Zona, etc.)</p>
+            <p className="text-xs text-slate-500 mb-4">Selecciona columnas adicionales para agregar como filtros en el tablero (Ej: Suc, Estado OT, etc.)</p>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-2 max-h-40 overflow-y-auto p-2 border border-slate-200 rounded-lg bg-white">
                 {headers.map(h => (
                     <label key={h} className="flex items-center space-x-2 p-1 hover:bg-slate-50 rounded cursor-pointer">
