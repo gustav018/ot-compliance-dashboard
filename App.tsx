@@ -102,7 +102,7 @@ const App: React.FC = () => {
               </h1>
             </div>
             <div className="flex items-center gap-4">
-              <span className="text-sm text-slate-500 hidden sm:inline-block">v1.4.0</span>
+              <span className="text-sm text-slate-500 hidden sm:inline-block"></span>
             </div>
           </div>
         </div>
