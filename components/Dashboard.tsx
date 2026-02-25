@@ -320,7 +320,7 @@ const Dashboard: React.FC<DashboardProps> = ({ uniqueOTs, allRows, onReset, file
             }`}
           >
             <Box size={18} />
-            Logística y Cumplimiento (Ind. 1)
+            % Cumplimiento de la fecha prometida al cliente (Ind. 1)
           </button>
           <button
             onClick={() => setActiveTab('financial')}
@@ -331,7 +331,7 @@ const Dashboard: React.FC<DashboardProps> = ({ uniqueOTs, allRows, onReset, file
             }`}
           >
             <CreditCard size={18} />
-            Financiero y Facturación (Ind. 2)
+            Retrabajo (Ind. 2)
           </button>
       </div>
 
@@ -341,7 +341,7 @@ const Dashboard: React.FC<DashboardProps> = ({ uniqueOTs, allRows, onReset, file
              <div className="bg-blue-50 border border-blue-100 p-4 rounded-lg flex items-start gap-3">
                 <Box className="text-blue-600 mt-1" size={20} />
                 <div className="text-sm text-blue-800">
-                    <strong>Datos Filtrados para Logística:</strong> Se han eliminado duplicados de OT (1 registro por OT) y excluido clientes internos (C0008157, C0001114, C0001140).
+                    <strong>Datos Filtrados para Indicadores:</strong> Se han eliminado duplicados de OT (1 registro por OT) y excluido clientes internos (C0008157, C0001114, C0001140).
                     <br/>
                     <span className="text-xs text-blue-600 mt-1 inline-block">Nota: Si existe una "2da Fecha Estimada", se utiliza esa para el cálculo de atraso.</span>
                 </div>
